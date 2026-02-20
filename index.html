@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PocketPixels — Tiny Discoveries. Big Ideas.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Archivo+Black&family=IBM+Plex+Mono:wght@400;500&family=Black+Ops+One&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+:root {
+  --white: #ffffff;
+  --off: #f7f6f2;
+  --ink: #0d0d0d;
+  --muted: #777770;
+  --lime: #c8ff00;
+  --pink: #ff3cac;
+  --sky: #00d4ff;
+  --orange: #ff6b00;
+  --purple: #7b2fff;
+  --yellow: #ffe600;
+  --border: #e0dfd8;
+  --font-black: 'Black Ops One', sans-serif;
+  --font-body: 'Space Grotesk', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-heavy: 'Archivo Black', sans-serif;
+}
+
+body {
+  background: var(--white);
+  color: var(--ink);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+#cur { position:fixed; width:12px; height:12px; background:var(--ink); border-radius:50%; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition:width .15s,height .15s,background .15s; }
+#cur.h { width:8px; height:8px; background:var(--pink); }
+#cur2 { position:fixed; width:40px; height:40px; border:2px solid var(--ink); border-radius:50%; pointer-events:none; z-index:9998; transform:translate(-50%,-50%); transition:width .3s,height .3s,border-color .3s; }
+#cur2.h { width:56px; height:56px; border-color:var(--pink); }
+
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:200;
+  background: var(--white);
+  border-bottom: 2px solid var(--ink);
+  display: flex; align-items:center; justify-content:space-between;
+  padding: 0 2.5rem; height: 64px;
+}
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.logo-px { display:grid; grid-template-columns:repeat(3,8px); gap:3px; }
+.logo-px span { display:block; width:8px; height:8px; }
+.logo-px span:nth-child(1){ background:var(--lime); }
+.logo-px span:nth-child(2){ background:var(--pink); }
+.logo-px span:nth-child(3){ background:var(--sky); }
+.logo-px span:nth-child(4){ background:var(--sky); }
+.logo-px span:nth-child(5){ background:var(--lime); }
+.logo-px span:nth-child(6){ background:var(--orange); }
+.logo-px span:nth-child(7){ background:var(--pink); }
+.logo-px span:nth-child(8){ background:var(--orange); }
+.logo-px span:nth-child(9){ background:var(--lime); }
+.logo-word { font-family: var(--font-black); font-size: 1.1rem; letter-spacing:0.04em; color: var(--ink); }
+.logo-word b { color: var(--pink); font-weight:inherit; }
+
+.nav-links { display:flex; gap:2rem; list-style:none; }
+.nav-links a { font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .2s; }
+.nav-links a:hover { color:var(--ink); }
+
+.nav-pill { font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; background:var(--ink); color:var(--white); border:none; padding:0.5rem 1.2rem; cursor:none; transition:background .2s,transform .2s; }
+.nav-pill:hover { background:var(--pink); transform:translateY(-2px); }
+
+.hero { min-height:100vh; background:var(--white); display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:7rem 2.5rem 4rem; position:relative; overflow:hidden; }
+
+.blob { position:absolute; border-radius:50%; pointer-events:none; animation:blobFloat 8s ease-in-out infinite; }
+.blob1 { width:180px; height:180px; background:var(--lime); top:8%; right:8%; animation-delay:0s; }
+.blob2 { width:120px; height:120px; background:var(--pink); top:22%; right:22%; animation-delay:1.5s; border-radius:30% 70% 70% 30%/30% 30% 70% 70%; }
+.blob3 { width:90px; height:90px; background:var(--sky); bottom:18%; right:12%; animation-delay:3s; }
+.blob4 { width:60px; height:60px; background:var(--orange); bottom:30%; right:30%; animation-delay:2s; border-radius:20% 80% 50% 50%/40% 40% 60% 60%; }
+.blob5 { width:200px; height:200px; background:var(--yellow); opacity:0.5; bottom:5%; left:5%; animation-delay:1s; border-radius:60% 40% 30% 70%/60% 30% 70% 40%; }
+
+@keyframes blobFloat { 0%,100%{transform:translateY(0) rotate(0deg)} 33%{transform:translateY(-18px) rotate(5deg)} 66%{transform:translateY(10px) rotate(-3deg)} }
+
+.hero-tag { font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.2em; text-transform:uppercase; background:var(--lime); color:var(--ink); padding:0.3rem 0.8rem; display:inline-block; margin-bottom:2rem; opacity:0; animation:popIn .5s .2s forwards; }
+
+.hero-h1 { font-family:var(--font-black); font-size:clamp(4.5rem,12vw,11rem); line-height:0.9; letter-spacing:-0.01em; color:var(--ink); margin-bottom:0.5rem; opacity:0; animation:slideUp .7s .35s forwards; }
+.hero-h1 .stroke { -webkit-text-stroke:3px var(--ink); color:transparent; }
+.hero-h1 .fill-pink { color:var(--pink); }
+
+.hero-sub { font-family:var(--font-heavy); font-size:clamp(1.2rem,3vw,2.2rem); color:var(--muted); margin-bottom:2.5rem; opacity:0; animation:slideUp .7s .5s forwards; }
+.hero-desc { font-size:1rem; color:var(--muted); line-height:1.7; max-width:480px; margin-bottom:2.5rem; opacity:0; animation:slideUp .7s .65s forwards; }
+
+.hero-btns { display:flex; gap:1rem; flex-wrap:wrap; opacity:0; animation:slideUp .7s .8s forwards; }
+.btn-solid { font-family:var(--font-mono); font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; background:var(--ink); color:var(--white); padding:0.9rem 2rem; border:2px solid var(--ink); cursor:none; transition:all .2s; }
+.btn-solid:hover { background:var(--pink); border-color:var(--pink); transform:translate(-3px,-3px); box-shadow:3px 3px 0 var(--ink); }
+.btn-outline { font-family:var(--font-mono); font-size:0.75rem; letter-spacing:0.1em; text-transform:uppercase; background:transparent; color:var(--ink); padding:0.9rem 2rem; border:2px solid var(--ink); cursor:none; transition:all .2s; }
+.btn-outline:hover { background:var(--lime); transform:translate(-3px,-3px); box-shadow:3px 3px 0 var(--ink); }
+
+.hero-counter { position:absolute; right:2.5rem; bottom:4rem; display:flex; flex-direction:column; align-items:flex-end; gap:1rem; opacity:0; animation:fadeIn .8s 1.2s forwards; }
+.counter-stat { text-align:right; }
+.counter-num { font-family:var(--font-black); font-size:3rem; line-height:1; }
+.counter-label { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); }
+.counter-div { width:40px; height:2px; background:var(--border); margin-left:auto; }
+
+.ticker { background:var(--ink); color:var(--white); overflow:hidden; padding:0.7rem 0; border-top:2px solid var(--ink); border-bottom:2px solid var(--ink); }
+.ticker-inner { display:flex; gap:0; white-space:nowrap; animation:tick 25s linear infinite; }
+.tick-item { font-family:var(--font-mono); font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; padding:0 2rem; display:flex; align-items:center; gap:0.75rem; flex-shrink:0; }
+.tick-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+@keyframes tick { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+
+.wrap { max-width:1320px; margin:0 auto; padding:0 2.5rem; }
+.sec { padding:7rem 0; }
+
+.sec-eyebrow { font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted); margin-bottom:0.5rem; }
+.sec-title { font-family:var(--font-black); font-size:clamp(2.5rem,5vw,4.5rem); line-height:0.92; color:var(--ink); margin-bottom:3rem; }
+.sec-title .stroke2 { -webkit-text-stroke:2.5px var(--ink); color:transparent; }
+.sec-head { display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:2.5rem; padding-bottom:1rem; border-bottom:2px solid var(--ink); }
+.sec-more { font-family:var(--font-mono); font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); text-decoration:none; transition:color .2s; }
+.sec-more:hover { color:var(--pink); }
+
+.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; background:var(--ink); border:2px solid var(--ink); }
+.grid2 { display:grid; grid-template-columns:repeat(2,1fr); gap:2px; background:var(--ink); border:2px solid var(--ink); }
+
+.card { background:var(--white); padding:2rem; transition:background .2s; cursor:none; position:relative; }
+.card:hover { background:var(--off); }
+.card.lime:hover { background:#f5ffb8; }
+.card.pink:hover { background:#fff0f7; }
+.card.sky:hover { background:#eafaff; }
+.card.orange:hover { background:#fff4ec; }
+
+.card-accent { width:100%; height:4px; margin-bottom:1.5rem; }
+.card-emoji { font-size:2rem; margin-bottom:1rem; display:block; }
+.card-cat { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.6rem; }
+.card-title { font-family:var(--font-heavy); font-size:1.15rem; color:var(--ink); margin-bottom:0.6rem; line-height:1.25; }
+.card-desc { font-size:0.85rem; color:var(--muted); line-height:1.65; margin-bottom:1.25rem; }
+.card-foot { display:flex; justify-content:space-between; align-items:center; }
+
+.verdict { font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; padding:0.25rem 0.6rem; border:1.5px solid; display:inline-block; }
+.v-must { color:var(--ink); border-color:var(--lime); background:var(--lime); }
+.v-solid { color:var(--ink); border-color:#ffe600; background:#ffe600; }
+.v-slop { color:var(--white); border-color:var(--ink); background:var(--ink); }
+.saves { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.06em; color:var(--muted); }
+
+.featured { display:grid; grid-template-columns:1fr 1fr; border:2px solid var(--ink); background:var(--ink); gap:2px; margin-bottom:2px; }
+.feat-vis { background:var(--off); min-height:360px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.feat-canvas { width:100%; height:100%; position:absolute; top:0; left:0; }
+.feat-info { background:var(--white); padding:3rem 2.5rem; display:flex; flex-direction:column; justify-content:center; }
+.feat-label { display:inline-block; font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; background:var(--sky); color:var(--ink); padding:0.2rem 0.6rem; margin-bottom:1.25rem; }
+.feat-title { font-family:var(--font-black); font-size:2.8rem; line-height:0.92; color:var(--ink); margin-bottom:1rem; }
+.feat-desc { font-size:0.9rem; color:var(--muted); line-height:1.7; margin-bottom:1.5rem; }
+.feat-meta { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted); display:flex; gap:1.5rem; margin-top:1.5rem; }
+
+.cat-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0; border:2px solid var(--ink); background:var(--ink); margin-bottom:5rem; }
+.cat-card { background:var(--white); padding:2.5rem 2rem; border-right:2px solid var(--ink); transition:background .2s; cursor:none; text-decoration:none; color:inherit; display:block; position:relative; overflow:hidden; }
+.cat-card:last-child { border-right:none; }
+.cat-card::after { content:''; position:absolute; bottom:0; left:0; right:0; height:0; transition:height .3s; }
+.cat-card:hover::after { height:5px; }
+.cat-card:nth-child(1)::after { background:var(--lime); }
+.cat-card:nth-child(2)::after { background:var(--pink); }
+.cat-card:nth-child(3)::after { background:var(--sky); }
+.cat-card:nth-child(4)::after { background:var(--orange); }
+.cat-card:hover { background:var(--off); }
+.cat-big { font-family:var(--font-black); font-size:3.5rem; line-height:1; color:var(--border); position:absolute; bottom:1rem; right:1rem; pointer-events:none; }
+.cat-icon { font-size:1.8rem; margin-bottom:1rem; display:block; }
+.cat-name { font-family:var(--font-heavy); font-size:1rem; color:var(--ink); margin-bottom:0.3rem; }
+.cat-count { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+
+.nl-section { background:var(--ink); color:var(--white); padding:5rem 2.5rem; display:grid; grid-template-columns:1fr 1fr; gap:5rem; align-items:center; position:relative; overflow:hidden; }
+.nl-blobs { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.nl-blob { position:absolute; border-radius:50%; opacity:0.15; }
+.nl-blob1 { width:300px; height:300px; background:var(--lime); top:-80px; right:-80px; }
+.nl-blob2 { width:200px; height:200px; background:var(--pink); bottom:-60px; right:40%; }
+.nl-title { font-family:var(--font-black); font-size:clamp(3rem,5vw,5rem); line-height:0.9; position:relative; z-index:1; }
+.nl-title .hl { color:var(--lime); }
+.nl-sub { font-size:0.9rem; color:rgba(255,255,255,0.6); line-height:1.7; margin:1.25rem 0 2rem; position:relative; z-index:1; }
+.nl-form { display:flex; gap:0; position:relative; z-index:1; }
+.nl-input { flex:1; background:var(--white); color:var(--ink); border:none; padding:0.9rem 1rem; font-family:var(--font-mono); font-size:0.8rem; outline:none; }
+.nl-input::placeholder { color:#aaa; }
+.nl-btn { font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; background:var(--lime); color:var(--ink); border:none; padding:0.9rem 1.5rem; cursor:none; font-weight:700; transition:background .2s; white-space:nowrap; }
+.nl-btn:hover { background:#d4ff1a; }
+.nl-art { position:relative; z-index:1; display:grid; grid-template-columns:repeat(16,1fr); gap:4px; }
+.nl-px { aspect-ratio:1; border-radius:2px; }
+
+.finds-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:2px; background:var(--ink); border:2px solid var(--ink); }
+.find-item { background:var(--white); padding:2rem; display:flex; gap:1.25rem; transition:background .2s; cursor:none; }
+.find-item:hover { background:var(--off); }
+.find-num { font-family:var(--font-black); font-size:2.8rem; color:var(--border); line-height:1; flex-shrink:0; width:52px; }
+.find-name { font-family:var(--font-heavy); font-size:0.95rem; color:var(--ink); margin-bottom:0.35rem; }
+.find-desc { font-size:0.82rem; color:var(--muted); line-height:1.6; }
+.find-url { font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.06em; color:var(--sky); display:block; margin-top:0.6rem; text-decoration:none; }
+
+.manifesto-sec { background:var(--off); border-top:2px solid var(--ink); border-bottom:2px solid var(--ink); padding:7rem 0; }
+.manifesto-inner { display:grid; grid-template-columns:1fr 1.6fr; gap:5rem; max-width:1320px; margin:0 auto; padding:0 2.5rem; }
+.mani-left { position:sticky; top:100px; }
+.mani-tag { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; background:var(--pink); color:var(--white); padding:0.2rem 0.6rem; display:inline-block; margin-bottom:1rem; }
+.mani-title { font-family:var(--font-black); font-size:3.2rem; line-height:0.9; color:var(--ink); }
+.mani-body p { font-size:1.05rem; color:var(--muted); line-height:1.85; margin-bottom:1.5rem; }
+.mani-body strong { color:var(--ink); }
+.mani-body .hl { background:var(--lime); color:var(--ink); padding:0 0.2em; }
+
+.stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:2px; background:var(--ink); border:2px solid var(--ink); margin:5rem 0; }
+.stat-box { background:var(--white); padding:2.5rem 2rem; }
+.stat-n { font-family:var(--font-black); font-size:4rem; line-height:1; }
+.stat-l { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--muted); margin-top:0.4rem; }
+
+footer { background:var(--white); border-top:2px solid var(--ink); padding:4rem 2.5rem 2rem; }
+.foot-grid { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; margin-bottom:3rem; }
+.foot-brand p { font-size:0.85rem; color:var(--muted); line-height:1.7; margin-top:1rem; max-width:260px; }
+.foot-col h4 { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--ink); margin-bottom:1.25rem; }
+.foot-col ul { list-style:none; }
+.foot-col li { margin-bottom:0.6rem; }
+.foot-col a { font-size:0.85rem; color:var(--muted); text-decoration:none; transition:color .2s; }
+.foot-col a:hover { color:var(--ink); }
+.foot-bottom { border-top:2px solid var(--ink); padding-top:2rem; display:flex; justify-content:space-between; align-items:center; }
+.foot-bottom p { font-family:var(--font-mono); font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+.foot-pixels { display:flex; gap:5px; }
+.foot-px { width:10px; height:10px; }
+
+.rev { opacity:0; transform:translateY(32px); transition:opacity .65s ease, transform .65s ease; }
+.rev.on { opacity:1; transform:none; }
+.rev.d1 { transition-delay:.1s; }
+.rev.d2 { transition-delay:.2s; }
+.rev.d3 { transition-delay:.3s; }
+
+@keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+@keyframes popIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+@keyframes fadeIn { to{opacity:1} }
+
+.tags { display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:1.25rem; }
+.tag { font-family:var(--font-mono); font-size:0.6rem; letter-spacing:0.08em; text-transform:uppercase; border:1.5px solid var(--border); padding:0.18rem 0.5rem; color:var(--muted); cursor:none; transition:all .2s; }
+.tag:hover { border-color:var(--ink); color:var(--ink); }
+
+.grid-bg { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
+.grid-bg::before { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(0,212,255,0.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.06) 1px,transparent 1px); background-size:32px 32px; }
+
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .grid3,.grid2,.cat-grid,.stats-row,.foot-grid{ grid-template-columns:1fr; }
+  .featured,.finds-grid,.nl-section,.manifesto-inner{ grid-template-columns:1fr; }
+  .hero-h1{ font-size:4rem; }
+  .hero-counter{ display:none; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-px">
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+    <div class="logo-word">Pocket<b>Pixels</b></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#ai">AI &amp; Tools</a></li>
+    <li><a href="#games">Games</a></li>
+    <li><a href="#music">Music</a></li>
+    <li><a href="#finds">Finds</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
+  <button class="nav-pill">Subscribe →</button>
+</nav>
+
+<section class="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="blob blob3"></div>
+  <div class="blob blob4"></div>
+  <div class="blob blob5"></div>
+
+  <div class="hero-tag">✦ Weekly Curation — Issue #42</div>
+  <h1 class="hero-h1">
+    TINY<br>
+    <span class="stroke">DISCO</span><br>
+    <span class="fill-pink">-VERIES.</span>
+  </h1>
+  <p class="hero-sub">Big ideas in every pixel.</p>
+  <p class="hero-desc">AI tools, indie games, music plugins, weird websites — handpicked before they're everywhere. No noise. Just signal.</p>
+  <div class="hero-btns">
+    <button class="btn-solid">Explore Pixels →</button>
+    <button class="btn-outline">Get the Weekly</button>
+  </div>
+  <div class="hero-counter">
+    <div class="counter-stat">
+      <div class="counter-num" style="color:var(--pink)">168</div>
+      <div class="counter-label">Pixels Curated</div>
+    </div>
+    <div class="counter-div"></div>
+    <div class="counter-stat">
+      <div class="counter-num" style="color:var(--sky)">12k</div>
+      <div class="counter-label">Weekly Readers</div>
+    </div>
+    <div class="counter-div"></div>
+    <div class="counter-stat">
+      <div class="counter-num" style="color:var(--lime)">100%</div>
+      <div class="counter-label">Ad-Free</div>
+    </div>
+  </div>
+</section>
+
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="tick-item"><span class="tick-dot" style="background:var(--lime)"></span>Suno v4 Review</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--pink)"></span>Caves of Qud v1.0</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--sky)"></span>Cursor AI 2.0</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--orange)"></span>Pointer Pointer</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--lime)"></span>Vital 2 Beta</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--pink)"></span>Mamba Architecture</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--sky)"></span>Udio Remix Mode</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--orange)"></span>Balatro Expansion</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--lime)"></span>Recraft V3</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--pink)"></span>n8n Self-Host</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--lime)"></span>Suno v4 Review</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--pink)"></span>Caves of Qud v1.0</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--sky)"></span>Cursor AI 2.0</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--orange)"></span>Pointer Pointer</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--lime)"></span>Vital 2 Beta</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--pink)"></span>Mamba Architecture</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--sky)"></span>Udio Remix Mode</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--orange)"></span>Balatro Expansion</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--lime)"></span>Recraft V3</div>
+    <div class="tick-item"><span class="tick-dot" style="background:var(--pink)"></span>n8n Self-Host</div>
+  </div>
+</div>
+
+<div class="wrap" style="padding-top:5rem;">
+  <div class="cat-grid rev">
+    <a class="cat-card" href="#ai">
+      <span class="cat-icon">🤖</span>
+      <div class="cat-name">AI &amp; Tools</div>
+      <div class="cat-count">47 pixels</div>
+      <div class="cat-big">01</div>
+    </a>
+    <a class="cat-card" href="#games">
+      <span class="cat-icon">🕹️</span>
+      <div class="cat-name">Indie Games</div>
+      <div class="cat-count">32 pixels</div>
+      <div class="cat-big">02</div>
+    </a>
+    <a class="cat-card" href="#music">
+      <span class="cat-icon">🎛️</span>
+      <div class="cat-name">Music &amp; Audio</div>
+      <div class="cat-count">28 pixels</div>
+      <div class="cat-big">03</div>
+    </a>
+    <a class="cat-card" href="#finds" style="border-right:none;">
+      <span class="cat-icon">🔭</span>
+      <div class="cat-name">Random Finds</div>
+      <div class="cat-count">61 pixels</div>
+      <div class="cat-big">04</div>
+    </a>
+  </div>
+</div>
+
+<section class="sec" id="ai" style="position:relative;">
+  <div class="grid-bg"></div>
+  <div class="wrap" style="position:relative;z-index:1;">
+    <div class="sec-head rev">
+      <div>
+        <div class="sec-eyebrow">This Week's Feature</div>
+        <div class="sec-title">AI &amp; <span class="stroke2">TOOLS</span></div>
+      </div>
+      <a href="#" class="sec-more">All AI picks →</a>
+    </div>
+    <div class="featured rev">
+      <div class="feat-vis">
+        <canvas class="feat-canvas" id="aiCanvas"></canvas>
+      </div>
+      <div class="feat-info">
+        <span class="feat-label">⚡ Featured Pick</span>
+        <div class="feat-title">Cursor AI<br>2.0 — First Look</div>
+        <div class="verdict v-must" style="margin-bottom:1rem;">★ Must Try</div>
+        <div class="tags"><span class="tag">AI</span><span class="tag">Code</span><span class="tag">Editor</span></div>
+        <p class="feat-desc">The IDE that thinks with you just leveled up. Multi-file context, composer mode, and a model router that picks the right LLM per task. If you code daily, this changes how you work.</p>
+        <div class="feat-meta">
+          <span>Feb 18, 2025</span>
+          <span>4 min read</span>
+          <span>2.4k saves</span>
+        </div>
+      </div>
+    </div>
+    <div class="grid3 rev d1" style="margin-top:2px;">
+      <div class="card sky">
+        <div class="card-accent" style="background:var(--sky)"></div>
+        <span class="card-emoji">🧠</span>
+        <div class="card-cat" style="color:var(--sky)">AI Research</div>
+        <div class="card-title">Gemini 2.0 Flash Thinking</div>
+        <div class="card-desc">Google's chain-of-thought answer. Fast for reasoning, slips on edge cases but great for complex drafting and planning.</div>
+        <div class="tags"><span class="tag">Reasoning</span><span class="tag">Google</span></div>
+        <div class="card-foot"><span class="verdict v-solid">Solid</span><span class="saves">134 saves</span></div>
+      </div>
+      <div class="card pink">
+        <div class="card-accent" style="background:var(--pink)"></div>
+        <span class="card-emoji">🎨</span>
+        <div class="card-cat" style="color:var(--pink)">Design AI</div>
+        <div class="card-title">Recraft V3 — Designer's Secret</div>
+        <div class="card-desc">Vector-native AI image generation that outputs actual SVGs. For UI designers tired of rasterized slop. Genuinely different.</div>
+        <div class="tags"><span class="tag">Design</span><span class="tag">Vector</span></div>
+        <div class="card-foot"><span class="verdict v-must">Must Try</span><span class="saves">287 saves</span></div>
+      </div>
+      <div class="card lime">
+        <div class="card-accent" style="background:var(--lime)"></div>
+        <span class="card-emoji">⚡</span>
+        <div class="card-cat" style="color:#7aaa00">Automation</div>
+        <div class="card-title">n8n Self-Hosted Workflows</div>
+        <div class="card-desc">Build LLM pipelines without handing your data to the cloud. Total control. The Zapier killer for nerds.</div>
+        <div class="tags"><span class="tag">Workflow</span><span class="tag">OSS</span></div>
+        <div class="card-foot"><span class="verdict v-solid">Solid</span><span class="saves">201 saves</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="games" style="background:var(--off);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);">
+  <div class="wrap">
+    <div class="sec-head rev">
+      <div>
+        <div class="sec-eyebrow">Hidden Gems</div>
+        <div class="sec-title"><span class="stroke2">INDIE</span> GAMES</div>
+      </div>
+      <a href="#" class="sec-more">All game picks →</a>
+    </div>
+    <div class="grid3 rev">
+      <div class="card">
+        <div class="card-accent" style="background:var(--yellow)"></div>
+        <span class="card-emoji">🃏</span>
+        <div class="card-cat" style="color:#b8a000">Roguelike</div>
+        <div class="card-title">Balatro — A Year Later</div>
+        <div class="card-desc">Poker meets roguelike and somehow became the most addictive thing of 2024. Now with mods. 300+ hours and counting.</div>
+        <div class="tags"><span class="tag">Roguelike</span><span class="tag">Cards</span></div>
+        <div class="card-foot"><span class="verdict v-must">Must Try</span><span class="saves">512 saves</span></div>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:var(--purple)"></div>
+        <span class="card-emoji">🌌</span>
+        <div class="card-cat" style="color:var(--purple)">RPG</div>
+        <div class="card-title">Caves of Qud v1.0</div>
+        <div class="card-desc">14 years in Early Access. The most complex RPG ever made by two people. Not for everyone—but for the right person, nothing else exists.</div>
+        <div class="tags"><span class="tag">RPG</span><span class="tag">Deep</span></div>
+        <div class="card-foot"><span class="verdict v-solid">Solid</span><span class="saves">388 saves</span></div>
+      </div>
+      <div class="card">
+        <div class="card-accent" style="background:#6ee7a0"></div>
+        <span class="card-emoji">🌱</span>
+        <div class="card-cat" style="color:#2d9a5f">Puzzle / Cozy</div>
+        <div class="card-title">Botany Manor</div>
+        <div class="card-desc">Grow extinct plants by deciphering environmental clues. Zero combat. Pure puzzle satisfaction. Best on a Sunday afternoon.</div>
+        <div class="tags"><span class="tag">Puzzle</span><span class="tag">Cozy</span></div>
+        <div class="card-foot"><span class="verdict v-solid">Solid</span><span class="saves">176 saves</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="music">
+  <div class="wrap">
+    <div class="sec-head rev">
+      <div>
+        <div class="sec-eyebrow">Sound Tools</div>
+        <div class="sec-title">MUSIC &amp; <span class="stroke2">AUDIO</span></div>
+      </div>
+      <a href="#" class="sec-more">All audio picks →</a>
+    </div>
+    <div class="grid3 rev">
+      <div class="card pink">
+        <div class="card-accent" style="background:var(--pink)"></div>
+        <span class="card-emoji">🎹</span>
+        <div class="card-cat" style="color:var(--pink)">Synth / Free</div>
+        <div class="card-title">Vital 2 — Free Synth Masterclass</div>
+        <div class="card-desc">Best free wavetable synth just got a major update. Spectral warping + new modulation matrix. Every producer needs this installed.</div>
+        <div class="tags"><span class="tag">Synth</span><span class="tag">Free</span></div>
+        <div class="card-foot"><span class="verdict v-must">Must Try</span><span class="saves">621 saves</span></div>
+      </div>
+      <div class="card sky">
+        <div class="card-accent" style="background:var(--sky)"></div>
+        <span class="card-emoji">🎙️</span>
+        <div class="card-cat" style="color:var(--sky)">AI Music</div>
+        <div class="card-title">Udio Remix Mode</div>
+        <div class="card-desc">Upload any audio, describe what you want changed. Stems-level control through prompting. AI music finally found its killer feature.</div>
+        <div class="tags"><span class="tag">AI Music</span><span class="tag">Remix</span></div>
+        <div class="card-foot"><span class="verdict v-solid">Solid</span><span class="saves">299 saves</span></div>
+      </div>
+      <div class="card orange">
+        <div class="card-accent" style="background:var(--orange)"></div>
+        <span class="card-emoji">🔊</span>
+        <div class="card-cat" style="color:var(--orange)">Samples</div>
+        <div class="card-title">Splice AI Packs</div>
+        <div class="card-desc">AI-generated sample packs flooding the marketplace. Technically competent, creatively hollow. Save your coins for real sound designers.</div>
+        <div class="tags"><span class="tag">Samples</span><span class="tag">AI</span></div>
+        <div class="card-foot"><span class="verdict v-slop">Slop</span><span class="saves">89 saves</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="finds" style="background:var(--off);border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);">
+  <div class="wrap">
+    <div class="sec-head rev">
+      <div>
+        <div class="sec-eyebrow">Down the Rabbit Hole</div>
+        <div class="sec-title">RANDOM <span class="stroke2">FINDS</span></div>
+      </div>
+      <a href="#" class="sec-more">All finds →</a>
+    </div>
+    <div class="finds-grid rev">
+      <div class="find-item">
+        <div class="find-num">01</div>
+        <div>
+          <div class="find-name">Pointer Pointer</div>
+          <div class="find-desc">This site finds a real photo of a human pointing at wherever your cursor is. Completely useless. Completely perfect.</div>
+          <span class="find-url">pointerpointer.com</span>
+        </div>
+      </div>
+      <div class="find-item">
+        <div class="find-num">02</div>
+        <div>
+          <div class="find-name">Monolith — One Page Apps</div>
+          <div class="find-desc">Save any webpage as a single self-contained HTML file. Every asset inlined. Works offline forever. Best archival tool nobody talks about.</div>
+          <span class="find-url">github.com/Y2Z/monolith</span>
+        </div>
+      </div>
+      <div class="find-item">
+        <div class="find-num">03</div>
+        <div>
+          <div class="find-name">The True Size Of...</div>
+          <div class="find-desc">Drag any country over any other to see real size comparisons. Africa is massive. Greenland is lying to you.</div>
+          <span class="find-url">thetruesize.com</span>
+        </div>
+      </div>
+      <div class="find-item">
+        <div class="find-num">04</div>
+        <div>
+          <div class="find-name">Perchance — Infinite Generators</div>
+          <div class="find-desc">A scripting language for random text generators. Fantasy names, plot hooks, NPC backstories — thousands of existing generators.</div>
+          <span class="find-url">perchance.org</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <div class="stats-row rev">
+    <div class="stat-box"><div class="stat-n" style="color:var(--pink)">168</div><div class="stat-l">Pixels Curated</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--sky)">4</div><div class="stat-l">Categories</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--lime)">12k</div><div class="stat-l">Weekly Readers</div></div>
+    <div class="stat-box"><div class="stat-n" style="color:var(--orange)">0</div><div class="stat-l">Ads, Ever</div></div>
+  </div>
+</div>
+
+<section style="padding:5rem 0;" id="newsletter">
+  <div class="wrap">
+    <div class="nl-section rev">
+      <div class="nl-blobs"><div class="nl-blob nl-blob1"></div><div class="nl-blob nl-blob2"></div></div>
+      <div>
+        <div class="nl-title">POCKET<br><span class="hl">PIXELS</span><br>WEEKLY</div>
+        <p class="nl-sub">Top 5 discoveries, curated and delivered every Friday. No bloat, no sponsored garbage — just signal.</p>
+        <div class="nl-form">
+          <input type="email" class="nl-input" placeholder="your@email.com" id="nlEmail">
+          <button class="nl-btn" id="nlBtn">Subscribe →</button>
+        </div>
+      </div>
+      <div class="nl-art" id="nlArt"></div>
+    </div>
+  </div>
+</section>
+
+<section class="manifesto-sec" id="about">
+  <div class="manifesto-inner">
+    <div class="mani-left rev">
+      <div class="mani-tag">Why We Exist</div>
+      <div class="mani-title">THE CURATION ETHOS</div>
+    </div>
+    <div class="mani-body rev d2">
+      <p><strong>The internet is drowning in content.</strong> AI tools drop daily. Every indie game is "hidden gem of the year." Every plugin promises to change your workflow. Most of it is noise.</p>
+      <p>PocketPixels exists because <span class="hl">attention is finite</span> and curation is a craft. Every pixel we feature earned its place. We dig through the noise so you don't have to — and we're honest when something is slop.</p>
+      <p><strong>We cover the weird, the indie, the experimental.</strong> Not because it's contrarian — but because the most interesting ideas usually start small, offbeat, and slightly broken. We find them early.</p>
+      <p>No affiliate links. No sponsored placements. No VC-backed content machine. Just a person with a browser, a genuine opinion, and a deep love of <span class="hl">tiny discoveries</span>.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-grid">
+    <div class="foot-brand">
+      <div style="display:inline-flex;gap:10px;align-items:center;">
+        <div class="logo-px"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="logo-word">Pocket<b>Pixels</b></div>
+      </div>
+      <p>Curated discoveries across AI, indie games, music tools, and the weird corners of the internet.</p>
+    </div>
+    <div class="foot-col">
+      <h4>Sections</h4>
+      <ul><li><a href="#ai">AI &amp; Tools</a></li><li><a href="#games">Indie Games</a></li><li><a href="#music">Music &amp; Audio</a></li><li><a href="#finds">Random Finds</a></li></ul>
+    </div>
+    <div class="foot-col">
+      <h4>Meta</h4>
+      <ul><li><a href="#about">About</a></li><li><a href="#">Newsletter</a></li><li><a href="#">All Tags</a></li><li><a href="#">Archive</a></li></ul>
+    </div>
+    <div class="foot-col">
+      <h4>Connect</h4>
+      <ul><li><a href="#">Twitter / X</a></li><li><a href="#">Mastodon</a></li><li><a href="#">RSS Feed</a></li><li><a href="#">Contact</a></li></ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 PocketPixels — Tiny discoveries. Big ideas.</p>
+    <div class="foot-pixels">
+      <div class="foot-px" style="background:var(--lime)"></div>
+      <div class="foot-px" style="background:var(--pink)"></div>
+      <div class="foot-px" style="background:var(--sky)"></div>
+      <div class="foot-px" style="background:var(--orange)"></div>
+      <div class="foot-px" style="background:var(--purple)"></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+const c1=document.getElementById('cur'),c2=document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;c1.style.left=mx+'px';c1.style.top=my+'px';});
+(function loop(){rx+=(mx-rx)*0.11;ry+=(my-ry)*0.11;c2.style.left=rx+'px';c2.style.top=ry+'px';requestAnimationFrame(loop);})();
+document.querySelectorAll('a,button,.card,.cat-card,.find-item,.tag').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{c1.classList.add('h');c2.classList.add('h');});
+  el.addEventListener('mouseleave',()=>{c1.classList.remove('h');c2.classList.remove('h');});
+});
+
+// Futuristic canvas animation
+const canvas=document.getElementById('aiCanvas');
+const ctx=canvas.getContext('2d');
+function resize(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;}
+resize();
+window.addEventListener('resize',resize);
+const cols=['#00d4ff','#ff3cac','#c8ff00','#ff6b00','#7b2fff','#ffe600'];
+const nodes=Array.from({length:30},()=>({x:Math.random()*800,y:Math.random()*400,vx:(Math.random()-.5)*.7,vy:(Math.random()-.5)*.7,r:2+Math.random()*5,col:cols[Math.floor(Math.random()*cols.length)],p:Math.random()*Math.PI*2}));
+function draw(){
+  resize();
+  ctx.fillStyle='#f7f6f2';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='rgba(0,212,255,0.07)';ctx.lineWidth=1;
+  for(let x=0;x<canvas.width;x+=32){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
+  for(let y=0;y<canvas.height;y+=32){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+  nodes.forEach((n,i)=>{
+    nodes.forEach((m,j)=>{
+      if(j<=i)return;
+      const d=Math.hypot(n.x-m.x,n.y-m.y);
+      if(d<130){ctx.strokeStyle=`rgba(0,212,255,${.18*(1-d/130)})`;ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(n.x,n.y);ctx.lineTo(m.x,m.y);ctx.stroke();}
+    });
+  });
+  nodes.forEach(n=>{
+    n.p+=0.04;
+    const s=1+.3*Math.sin(n.p);
+    ctx.save();ctx.shadowBlur=14;ctx.shadowColor=n.col;
+    ctx.fillStyle=n.col;ctx.beginPath();ctx.arc(n.x,n.y,n.r*s,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    n.x+=n.vx;n.y+=n.vy;
+    if(n.x<0||n.x>canvas.width)n.vx*=-1;
+    if(n.y<0||n.y>canvas.height)n.vy*=-1;
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+// Newsletter pixel art
+const nlArt=document.getElementById('nlArt');
+const nlC=['#c8ff00','#ff3cac','#00d4ff','#ff6b00','#7b2fff','#ffe600'];
+for(let i=0;i<128;i++){
+  const d=document.createElement('div');d.className='nl-px';
+  d.style.background=nlC[Math.floor(Math.random()*nlC.length)];
+  d.style.opacity=Math.random()>.5?'1':'.12';
+  nlArt.appendChild(d);
+}
+
+// Scroll reveal
+const revEls=document.querySelectorAll('.rev');
+const ro=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
+revEls.forEach(el=>ro.observe(el));
+
+// Newsletter
+document.getElementById('nlBtn').addEventListener('click',()=>{
+  const v=document.getElementById('nlEmail').value;
+  const form=document.querySelector('.nl-form');
+  if(v.includes('@')){form.innerHTML='<p style="font-family:var(--font-mono);font-size:0.8rem;color:var(--lime);letter-spacing:0.1em;">✓ YOU\'RE IN — First pixel drops Friday.</p>';}
+  else{const i=document.getElementById('nlEmail');i.style.outline='2px solid var(--pink)';i.placeholder='enter a valid email...';setTimeout(()=>{i.style.outline='none';i.placeholder='your@email.com';},2000);}
+});
+document.querySelector('.nav-pill').addEventListener('click',()=>{document.getElementById('newsletter').scrollIntoView({behavior:'smooth'});});
+</script>
+</body>
+</html>
